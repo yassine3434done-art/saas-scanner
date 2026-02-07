@@ -36,17 +36,28 @@ except Exception:
 
 app = FastAPI(title="SaaS Scanner MVP")
 
+
 # ✅ CORS (Frontend -> Backend)
-# في Render (backend) زيد ENV: FRONTEND_ORIGIN = https://...onrender.com
-FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*").strip()
+# In Render (backend) set ENV:
+# FRONTEND_ORIGIN = https://YOUR-FRONTEND.onrender.com
+# Or multiple: https://...onrender.com,http://localhost:5173
+raw_origins = os.getenv("FRONTEND_ORIGIN", "*").strip()
+
+if raw_origins == "*":
+    allow_origins = ["*"]
+    allow_credentials = False  # ✅ IMPORTANT: can't use credentials with "*"
+else:
+    allow_origins = [o.strip().rstrip("/") for o in raw_origins.split(",") if o.strip()]
+    allow_credentials = True
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"] if FRONTEND_ORIGIN == "*" else [FRONTEND_ORIGIN],
-    allow_credentials=True,
+    allow_origins=allow_origins,
+    allow_credentials=allow_credentials,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # ✅ attach limiter + middleware + handler
 app.state.limiter = limiter
