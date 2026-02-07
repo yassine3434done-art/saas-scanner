@@ -1,8 +1,12 @@
+# backend/app/main.py
+
 from dotenv import load_dotenv
 load_dotenv()
 
-from fastapi import FastAPI
+import os
 import asyncio
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 # ✅ SlowAPI setup
 from slowapi.errors import RateLimitExceeded
@@ -31,6 +35,18 @@ except Exception:
 
 
 app = FastAPI(title="SaaS Scanner MVP")
+
+# ✅ CORS (Frontend -> Backend)
+# في Render (backend) زيد ENV: FRONTEND_ORIGIN = https://...onrender.com
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*").strip()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"] if FRONTEND_ORIGIN == "*" else [FRONTEND_ORIGIN],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ✅ attach limiter + middleware + handler
 app.state.limiter = limiter
@@ -70,7 +86,8 @@ if reports_router:
 @app.get("/health")
 def health():
     return {"ok": True}
-    
+
+
 @app.get("/")
 def root():
-    return {"ok": True, "message": "SaaS Scanner API is running", "docs": "/docs"}    
+    return {"ok": True, "message": "SaaS Scanner API is running", "docs": "/docs"}
