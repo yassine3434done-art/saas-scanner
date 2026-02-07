@@ -1,109 +1,38 @@
-# =========================================================
-# General
-# =========================================================
-.DS_Store
-Thumbs.db
-Desktop.ini
-
-# =========================================================
-# Secrets / env
-# =========================================================
+# ===== ENV / Secrets =====
 .env
 .env.*
-*.env
-*.pem
-*.key
+!.env.example
+token.txt
 
-# =========================================================
-# Python
-# =========================================================
+# ===== Python =====
 __pycache__/
 *.py[cod]
-*$py.class
 *.pyo
-
-# Virtual environments
-venv/
-.venv/
-env/
-ENV/
-
-# Python build
-build/
-dist/
+*.pyd
+*.so
 *.egg-info/
-.eggs/
-pip-wheel-metadata/
+dist/
+build/
+.venv/
+venv/
 
-# Tests / coverage
-.pytest_cache/
-.coverage
-.coverage.*
-htmlcov/
-.tox/
-.nox/
-.mypy_cache/
-.pyre/
-.pytype/
-
-# Logs
-*.log
-
-# SQLite DB
+# ===== Databases =====
 *.db
 *.sqlite
 *.sqlite3
 
-# =========================================================
-# FastAPI / Uvicorn
-# =========================================================
-*.pid
+# ===== PDFs / reports =====
+*.pdf
 
-# =========================================================
-# Node / Vite / React
-# =========================================================
-node_modules/
+# ===== Node / Frontend =====
+frontend/node_modules/
+frontend/dist/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
 
-# Vite / build outputs
-dist/
-dist-ssr/
-.vite/
-.vite-cache/
-.cache/
-
-# =========================================================
-# Frontend envs
-# =========================================================
-frontend/.env
-frontend/.env.*
-frontend/*.env
-
-# =========================================================
-# IDEs / editors
-# =========================================================
+# ===== OS / Editor =====
+.DS_Store
+Thumbs.db
 .vscode/
 .idea/
-*.iml
-
-# =========================================================
-# OS / Windows specific
-# =========================================================
-$RECYCLE.BIN/
-*.lnk
-
-# =========================================================
-# Git
-# =========================================================
-*.orig
-*.rej
-*.swp
-*.swo
-
-# =========================================================
-# Optional: ignore local docker volumes (if any)
-# =========================================================
-docker-data/
