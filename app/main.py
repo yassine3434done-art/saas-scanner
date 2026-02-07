@@ -70,3 +70,7 @@ if reports_router:
 @app.get("/health")
 def health():
     return {"ok": True}
+    
+@app.get("/")
+def root():
+    return {"ok": True, "message": "SaaS Scanner API is running", "docs": "/docs"}    
