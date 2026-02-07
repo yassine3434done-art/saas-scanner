@@ -1,9 +1,9 @@
 # backend/app/main.py
 
 from dotenv import load_dotenv
-
 load_dotenv()
 
+import os
 import asyncio
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,7 +28,6 @@ from app.scans.pages_routes import router as scans_pages_router
 from app.scans.cleanup import auto_cleanup_scans
 from app.scans.worker import scans_worker_loop
 
-# reports_router اختياري
 try:
     from app.reports.routes import router as reports_router
 except Exception:
@@ -37,14 +36,13 @@ except Exception:
 
 app = FastAPI(title="SaaS Scanner MVP")
 
-# ✅ CORS (needed for browser fetch from frontend)
+# ✅ CORS (Frontend -> Backend)
+# في Render (backend) زيد ENV: FRONTEND_ORIGIN = https://...onrender.com
+FRONTEND_ORIGIN = os.getenv("FRONTEND_ORIGIN", "*").strip()
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:5173",
-        "http://127.0.0.1:5173",
-        "https://saas-scanner.onrender.com",
-    ],
+    allow_origins=["*"] if FRONTEND_ORIGIN == "*" else [FRONTEND_ORIGIN],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
