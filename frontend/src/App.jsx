@@ -1,82 +1,46 @@
-import { useEffect, useState } from "react";
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "";
+import { NavLink, Route, Routes } from "react-router-dom";
+import Home from "./pages/Home.jsx";
+import Sites from "./pages/Sites.jsx";
+import Scans from "./pages/Scans.jsx";
+import ScanDetails from "./pages/ScanDetails.jsx";
 
 export default function App() {
-  const [loading, setLoading] = useState(true);
-  const [data, setData] = useState(null);
-  const [err, setErr] = useState("");
-
-  useEffect(() => {
-    async function run() {
-      try {
-        setLoading(true);
-        setErr("");
-
-        const url = `${API_BASE.replace(/\/$/, "")}/health`;
-        const res = await fetch(url);
-
-        const text = await res.text();
-        let json = null;
-        try {
-          json = JSON.parse(text);
-        } catch {
-          // not json
-        }
-
-        if (!res.ok) {
-          throw new Error(`HTTP ${res.status}: ${json ? JSON.stringify(json) : text}`);
-        }
-
-        setData(json ?? text);
-      } catch (e) {
-        setErr(String(e?.message || e));
-      } finally {
-        setLoading(false);
-      }
-    }
-    run();
-  }, []);
-
   return (
-    <div style={{ fontFamily: "Arial, sans-serif", padding: 24, maxWidth: 900, margin: "0 auto" }}>
-      <h1>SaaS Scanner</h1>
+    <div style={{ fontFamily: "Arial, sans-serif", minHeight: "100vh", background: "#fafafa" }}>
+      <header style={{ background: "white", borderBottom: "1px solid #eee" }}>
+        <div style={{ maxWidth: 1000, margin: "0 auto", padding: 16, display: "flex", gap: 16, alignItems: "center" }}>
+          <div style={{ fontWeight: 800 }}>SaaS Scanner</div>
 
-      <p>
-        API:{" "}
-        <a href={API_BASE} target="_blank" rel="noreferrer">
-          {API_BASE}
-        </a>{" "}
-        |{" "}
-        <a href={`${API_BASE.replace(/\/$/, "")}/docs`} target="_blank" rel="noreferrer">
-          /docs
-        </a>
-      </p>
+          <nav style={{ display: "flex", gap: 12 }}>
+            <NavLink to="/" style={({ isActive }) => linkStyle(isActive)}>Home</NavLink>
+            <NavLink to="/sites" style={({ isActive }) => linkStyle(isActive)}>Sites</NavLink>
+            <NavLink to="/scans" style={({ isActive }) => linkStyle(isActive)}>Scans</NavLink>
+          </nav>
 
-      <hr />
-
-      <h2>Health Check</h2>
-
-      {loading && <p>Loading…</p>}
-
-      {err && (
-        <div style={{ padding: 12, background: "#ffe8e8", border: "1px solid #ffb3b3" }}>
-          <b>Error:</b> {err}
-          <p style={{ marginTop: 8 }}>
-            جرّب تفتح{" "}
-            <a href={`${API_BASE.replace(/\/$/, "")}/health`} target="_blank" rel="noreferrer">
-              /health
-            </a>{" "}
-            مباشرة وشوف واش كيرجع JSON.
-          </p>
+          <div style={{ marginLeft: "auto", fontSize: 12, color: "#666" }}>
+            API: {import.meta.env.VITE_API_BASE_URL || "(not set)"}
+          </div>
         </div>
-      )}
+      </header>
 
-      {data && (
-        <pre style={{ padding: 12, background: "#f6f6f6", border: "1px solid #ddd", overflow: "auto" }}>
-          {typeof data === "string" ? data : JSON.stringify(data, null, 2)}
-        </pre>
-      )}
+      <main style={{ maxWidth: 1000, margin: "0 auto", padding: 16 }}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/sites" element={<Sites />} />
+          <Route path="/scans" element={<Scans />} />
+          <Route path="/scans/:id" element={<ScanDetails />} />
+        </Routes>
+      </main>
     </div>
   );
+}
+
+function linkStyle(active) {
+  return {
+    padding: "6px 10px",
+    borderRadius: 8,
+    textDecoration: "none",
+    color: active ? "white" : "#333",
+    background: active ? "#111" : "transparent",
+  };
 }
