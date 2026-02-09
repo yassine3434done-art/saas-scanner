@@ -2,7 +2,6 @@
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL || "").replace(/\/$/, "");
 
-// token كنخزنوه فالـbrowser
 const TOKEN_KEY = "saas_scanner_token";
 
 export function getToken() {
@@ -10,7 +9,11 @@ export function getToken() {
 }
 
 export function setToken(token) {
-  localStorage.setItem(TOKEN_KEY, (token || "").trim());
+  if (!token) {
+    localStorage.removeItem(TOKEN_KEY);
+    return;
+  }
+  localStorage.setItem(TOKEN_KEY, token.trim());
 }
 
 export function clearToken() {
@@ -18,12 +21,12 @@ export function clearToken() {
 }
 
 function authHeaders(extra = {}) {
-  const token = getToken();
-  if (!token) return extra;
-  return { ...extra, Authorization: `Bearer ${token}` };
+  const t = getToken();
+  if (!t) return extra;
+  return { ...extra, Authorization: `Bearer ${t}` };
 }
 
-async function parseResponse(res) {
+async function parseRes(res) {
   const text = await res.text();
   let json = null;
   try { json = JSON.parse(text); } catch {}
@@ -32,10 +35,8 @@ async function parseResponse(res) {
 }
 
 export async function apiGet(path) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    headers: authHeaders(),
-  });
-  return parseResponse(res);
+  const res = await fetch(`${API_BASE}${path}`, { headers: authHeaders() });
+  return parseRes(res);
 }
 
 export async function apiPost(path, body) {
@@ -44,15 +45,5 @@ export async function apiPost(path, body) {
     headers: authHeaders({ "Content-Type": "application/json" }),
     body: JSON.stringify(body ?? {}),
   });
-  return parseResponse(res);
-}
-
-// مهم: login/register ما خاصهمش Authorization
-export async function apiPostNoAuth(path, body) {
-  const res = await fetch(`${API_BASE}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body ?? {}),
-  });
-  return parseResponse(res);
+  return parseRes(res);
 }
